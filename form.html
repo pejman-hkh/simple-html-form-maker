@@ -14,64 +14,100 @@ obj_formMaker = {
 		return out.join(" ");
 	},
 
+	startFormGroup : function( auto = false ) {
+		
+		if( ! this.auto )
+			this.html += '<div class="form-group">';
+		
+		if( this.auto )
+				this.html += '<div class="col-md-'+( 12 / this.auto )+'">';
+
+		if( auto )
+			this.auto = auto;
+
+		return this;
+	},
+
+	endtFormGroup : function( auto = false ) {
+
+		if( auto == true ){
+			this.auto = false;
+		}
+		
+		this.html += '</div>';
+
+		if( auto )
+			this.html += '</div>';
+
+
+		return this;
+	},
+
 	input : function( label, name, attr ) {
 		var attr_set = this.makeAttr( attr );
 
-		this.html += '<div class="form-group">';
-			this.html += '<label>'+label+'</label><input '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" type="text" name="'+name+'" />';
-		this.html += '</div>';
+		this.startFormGroup();
+
+		this.html += '<label>'+label+'</label><input '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" type="text" name="'+name+'" />';
+
+		this.endtFormGroup();
+
 		return this;
 	},
 	select : function( label, name, options, attr ) {
 		var attr_set = this.makeAttr( attr );
 
-		this.html += '<div class="form-group">';
+		this.startFormGroup();
 			this.html += '<label>'+label+'</label>';
-			this.html += '<select '+attr_set+' class="form-control" name="'+name+'">';
+			this.html += '<select '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" name="'+name+'">';
 			for( x in options ) {
 				this.html += '<option value="'+x+'">'+options[x]+'</option>';
 			}
 			this.html += '</select>';
-		this.html += '</div>';
+		this.endtFormGroup();
 		return this;
 	},
 
 	textarea : function( label, name, attr ) {
 		var attr_set = this.makeAttr( attr );
 
-		this.html += '<div class="form-group">';
-			this.html += '<label>'+label+'</label><textarea '+attr_set+' class="form-control" name="'+name+'"></textarea>';
-		this.html += '</div>';
+		this.startFormGroup();
+		
+			this.html += '<label>'+label+'</label><textarea '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" name="'+name+'"></textarea>';
+		
+		this.endtFormGroup();
+
 		return this;
 	},
+
 	file : function( label, name, attr ) {
 		var attr_set = this.makeAttr( attr );
 
-		this.html += '<div class="form-group">';
+		this.startFormGroup();
 			this.html += '<label>'+label+'</label><input '+attr_set+' type="file" name="'+name+'" />';
-		this.html += '</div>';
+		this.endtFormGroup();
 		return this;
 	},
 	radio : function( label, name, options, attr ) {
 		var attr_set = this.makeAttr( attr );
 
-		this.html += '<div class="form-group">';
+		this.startFormGroup();
 			this.html += '<label>'+label+'</label>';
 			for( x in options ) {
 				this.html += '<label class="radio-inline"><input '+attr_set+' name="'+name+'" type="radio" value="'+x+'">'+options[x]+'</label>';
 			}
-		this.html += '</div>';
+		this.endtFormGroup();
 		return this;
 	},
 	checkbox : function( label, name, options, attr ) {
 		var attr_set = this.makeAttr( attr );
 
-		this.html += '<div class="form-group">';
+		this.startFormGroup();
 			this.html += '<label>'+label+'</label>';
 			for( x in options ) {
 				this.html += '<label class="checkbox-inline"><input '+attr_set+' name="'+name+'" type="checkbox" value="'+x+'">'+options[x]+'</label>';
 			}
-		this.html += '</div>';
+		this.endtFormGroup();
 		return this;
 	},
 	end : function() {
@@ -79,7 +115,6 @@ obj_formMaker = {
 		this.html += ' <button type="reset" class="btn btn-default">Reset Button</button>';
 		this.html += "</form>";
 	
-
 		html = this.html;
 
 		return this.each(function() {
@@ -96,6 +131,7 @@ formMaker = function( options ) {
 
 	opt = $.extend( def, options );
 
+	this.auto = false;
 	this.html = '<form method="'+opt.method+'" action="'+opt.action+'">';
 
 	for( i in obj_formMaker ) {
@@ -109,14 +145,23 @@ formMaker = function( options ) {
 jQuery.fn.formMaker = formMaker;
 
 form = $("#form").formMaker()
-.input( "test", "test", { class : "test", style : "background:red" } )
+.startFormGroup( 2 )
+.input( "test", "test", { class : "test" } )
+.input( "test1", "test2", { class : "test" } )
+.endtFormGroup( true )
+
 .textarea( "test1", "test1", { class : "test" } )
 .radio( "test2", "test2", [ "test", "test2" ], { class : "test"} )
 .checkbox( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
+.startFormGroup( 2 )
 .select( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
+.select( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
+.endtFormGroup( true )
+
 .file( "test", "test", { class : "test" } )
 .end();
 
 </script>
+
 
 
