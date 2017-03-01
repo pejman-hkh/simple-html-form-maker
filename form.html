@@ -1,0 +1,96 @@
+<div id="form"></div>
+
+<script>
+obj_formMaker = {
+	input : function( label, name, attr ) {
+		this.html += '<div class="form-group">';
+			this.html += '<label>'+label+'</label><input class="form-control" type="text" name="'+name+'" />';
+		this.html += '</div>';
+		return this;
+	},
+	select : function( label, name, options, attr ) {
+		this.html += '<div class="form-group">';
+			this.html += '<label>'+label+'</label>';
+			this.html += '<select class="form-control" name="'+name+'">';
+			for( x in options ) {
+				this.html += '<option value="'+x+'">'+options[x]+'</option>';
+			}
+			this.html += '</select>';
+		this.html += '</div>';
+		return this;
+	},
+
+	textarea : function( label, name, attr ) {
+		this.html += '<div class="form-group">';
+			this.html += '<label>'+label+'</label><textarea class="form-control" name="'+name+'"></textarea>';
+		this.html += '</div>';
+		return this;
+	},
+	file : function( label, name, attr ) {
+		this.html += '<div class="form-group">';
+			this.html += '<label>'+label+'</label><input type="file" name="'+name+'" />';
+		this.html += '</div>';
+		return this;
+	},
+	radio : function( label, name, options, attr ) {
+		this.html += '<div class="form-group">';
+			this.html += '<label>'+label+'</label>';
+			for( x in options ) {
+				this.html += '<label class="radio-inline"><input name="'+name+'" type="radio" value="'+x+'">'+options[x]+'</label>';
+			}
+		this.html += '</div>';
+		return this;
+	},
+	checkbox : function( label, name, options, attr ) {
+		this.html += '<div class="form-group">';
+			this.html += '<label>'+label+'</label>';
+			for( x in options ) {
+				this.html += '<label class="checkbox-inline"><input name="'+name+'" type="checkbox" value="'+x+'">'+options[x]+'</label>';
+			}
+		this.html += '</div>';
+		return this;
+	},
+	end : function() {
+		this.html += '<button type="submit" class="btn btn-default">Submit Button</button>';
+		this.html += ' <button type="reset" class="btn btn-default">Reset Button</button>';
+		this.html += "</form>";
+	
+
+		html = this.html;
+
+		return this.each(function() {
+			$(this).html( html );
+		});
+	}
+}
+
+formMaker = function( options ) {
+	var def = {
+		action : "",
+		method : "post"
+	}
+
+	opt = $.extend( def, options );
+
+	this.html = '<form method="'+opt.method+'" action="'+opt.action+'">';
+
+	for( i in obj_formMaker ) {
+		this[ i ] = obj_formMaker[i];
+	}
+
+	return this;
+}
+
+
+jQuery.fn.formMaker = formMaker;
+
+form = $("#form").formMaker()
+.input( "test", "test", { "class" : "test" } )
+.textarea( "test1", "test1", { "class" : "test" } )
+.radio( "test2", "test2", [ "test", "test2" ], { "class" : "test"} )
+.checkbox( "test2", "test2[]", [ "test", "test2" ], { "class" : "test"} )
+.select( "test2", "test2[]", [ "test", "test2" ], { "class" : "test"} )
+.file( "test", "test", { "class" : "test" } )
+.end();
+
+</script>
