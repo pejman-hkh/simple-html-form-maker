@@ -2,16 +2,32 @@
 
 <script>
 obj_formMaker = {
+	makeAttr : function( attr ) {
+		var out = [];
+		var i = 0;
+		for( x in attr ) {
+			if([ "class"].indexOf( x ) === -1  ) {
+				out[i++] = x+'="'+attr[x]+'"';
+			}
+		}
+
+		return out.join(" ");
+	},
+
 	input : function( label, name, attr ) {
+		var attr_set = this.makeAttr( attr );
+
 		this.html += '<div class="form-group">';
-			this.html += '<label>'+label+'</label><input class="form-control" type="text" name="'+name+'" />';
+			this.html += '<label>'+label+'</label><input '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" type="text" name="'+name+'" />';
 		this.html += '</div>';
 		return this;
 	},
 	select : function( label, name, options, attr ) {
+		var attr_set = this.makeAttr( attr );
+
 		this.html += '<div class="form-group">';
 			this.html += '<label>'+label+'</label>';
-			this.html += '<select class="form-control" name="'+name+'">';
+			this.html += '<select '+attr_set+' class="form-control" name="'+name+'">';
 			for( x in options ) {
 				this.html += '<option value="'+x+'">'+options[x]+'</option>';
 			}
@@ -21,31 +37,39 @@ obj_formMaker = {
 	},
 
 	textarea : function( label, name, attr ) {
+		var attr_set = this.makeAttr( attr );
+
 		this.html += '<div class="form-group">';
-			this.html += '<label>'+label+'</label><textarea class="form-control" name="'+name+'"></textarea>';
+			this.html += '<label>'+label+'</label><textarea '+attr_set+' class="form-control" name="'+name+'"></textarea>';
 		this.html += '</div>';
 		return this;
 	},
 	file : function( label, name, attr ) {
+		var attr_set = this.makeAttr( attr );
+
 		this.html += '<div class="form-group">';
-			this.html += '<label>'+label+'</label><input type="file" name="'+name+'" />';
+			this.html += '<label>'+label+'</label><input '+attr_set+' type="file" name="'+name+'" />';
 		this.html += '</div>';
 		return this;
 	},
 	radio : function( label, name, options, attr ) {
+		var attr_set = this.makeAttr( attr );
+
 		this.html += '<div class="form-group">';
 			this.html += '<label>'+label+'</label>';
 			for( x in options ) {
-				this.html += '<label class="radio-inline"><input name="'+name+'" type="radio" value="'+x+'">'+options[x]+'</label>';
+				this.html += '<label class="radio-inline"><input '+attr_set+' name="'+name+'" type="radio" value="'+x+'">'+options[x]+'</label>';
 			}
 		this.html += '</div>';
 		return this;
 	},
 	checkbox : function( label, name, options, attr ) {
+		var attr_set = this.makeAttr( attr );
+
 		this.html += '<div class="form-group">';
 			this.html += '<label>'+label+'</label>';
 			for( x in options ) {
-				this.html += '<label class="checkbox-inline"><input name="'+name+'" type="checkbox" value="'+x+'">'+options[x]+'</label>';
+				this.html += '<label class="checkbox-inline"><input '+attr_set+' name="'+name+'" type="checkbox" value="'+x+'">'+options[x]+'</label>';
 			}
 		this.html += '</div>';
 		return this;
@@ -70,7 +94,7 @@ formMaker = function( options ) {
 		method : "post"
 	}
 
-	opt = jQuery.extend( def, options );
+	opt = $.extend( def, options );
 
 	this.html = '<form method="'+opt.method+'" action="'+opt.action+'">';
 
@@ -85,12 +109,14 @@ formMaker = function( options ) {
 jQuery.fn.formMaker = formMaker;
 
 form = $("#form").formMaker()
-.input( "test", "test", { "class" : "test" } )
-.textarea( "test1", "test1", { "class" : "test" } )
-.radio( "test2", "test2", [ "test", "test2" ], { "class" : "test"} )
-.checkbox( "test2", "test2[]", [ "test", "test2" ], { "class" : "test"} )
-.select( "test2", "test2[]", [ "test", "test2" ], { "class" : "test"} )
-.file( "test", "test", { "class" : "test" } )
+.input( "test", "test", { class : "test", style : "background:red" } )
+.textarea( "test1", "test1", { class : "test" } )
+.radio( "test2", "test2", [ "test", "test2" ], { class : "test"} )
+.checkbox( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
+.select( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
+.file( "test", "test", { class : "test" } )
 .end();
 
 </script>
+
+
