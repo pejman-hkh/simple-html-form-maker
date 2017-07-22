@@ -1,157 +1,166 @@
-<div id="form"></div>
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
 
-<script>
-obj_formMaker = {
-	makeAttr : function( attr ) {
-		var out = [];
-		var i = 0;
-		for( x in attr ) {
-			if([ "class"].indexOf( x ) === -1  ) {
-				out[i++] = x+'="'+attr[x]+'"';
+	<script type="text/javascript">
+		obj_formMaker = {
+			makeAttr : function( attr ) {
+				var out = [];
+				var i = 0;
+				for( x in attr ) {
+					if([ "class"].indexOf( x ) === -1  ) {
+						out[i++] = x+'="'+attr[x]+'"';
+					}
+				}
+
+				return out.join(" ");
+			},
+
+			startFormGroup : function( auto = false ) {
+				this.html += this.bef_html;
+
+				if( auto ) {
+					this.html += '<div class="form-group"><div class="row mrl0 m10">';
+					this.bef_html = '<div class="col-md-'+( 12 / auto )+'">';
+
+				}
+
+				return this;
+			},
+
+			endFormGroup : function( auto = false ) {
+				
+				this.html += '</div>';
+
+				if( auto ) {
+					this.bef_html = '<div class="form-group">';
+					this.html += '</div></div>';
+				}
+
+				return this;
+			},
+
+			input : function( label, name, attr ) {
+				var attr_set = this.makeAttr( attr );
+
+				this.startFormGroup();
+
+				this.html += '<label>'+label+'</label><input '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" type="text" name="'+name+'" />';
+
+				this.endFormGroup();
+
+				return this;
+			},
+			select : function( label, name, options, attr ) {
+				var attr_set = this.makeAttr( attr );
+
+				this.startFormGroup();
+					this.html += '<label>'+label+'</label>';
+					this.html += '<select '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" name="'+name+'">';
+					for( x in options ) {
+						this.html += '<option value="'+x+'">'+options[x]+'</option>';
+					}
+					this.html += '</select>';
+				this.endFormGroup();
+				return this;
+			},
+
+			textarea : function( label, name, attr ) {
+				var attr_set = this.makeAttr( attr );
+
+				this.startFormGroup();
+				
+					this.html += '<label>'+label+'</label><textarea '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" name="'+name+'"></textarea>';
+				
+				this.endFormGroup();
+
+				return this;
+			},
+
+			file : function( label, name, attr ) {
+				var attr_set = this.makeAttr( attr );
+
+				this.startFormGroup();
+					this.html += '<label>'+label+'</label><input '+attr_set+' type="file" name="'+name+'" />';
+				this.endFormGroup();
+				return this;
+			},
+			radio : function( label, name, options, attr ) {
+				var attr_set = this.makeAttr( attr );
+
+				this.startFormGroup();
+					this.html += '<label>'+label+'</label><br />';
+					for( x in options ) {
+						this.html += '<label class="radio-inline"><input '+attr_set+' name="'+name+'" type="radio" value="'+x+'">'+options[x]+'</label>';
+					}
+				this.endFormGroup();
+				return this;
+			},
+			checkbox : function( label, name, options, attr ) {
+				var attr_set = this.makeAttr( attr );
+
+				this.startFormGroup();
+				
+					for( x in options ) {
+						this.html += '<label class="checkbox-inline"><input '+attr_set+' name="'+name+'" type="checkbox" value="'+x+'">'+options[x]+'</label>'+( (typeof attr !== 'undefined' && attr['display'] == "block") ? "<br />" : "");
+					}
+				this.endFormGroup();
+				return this;
+			},
+			end : function() {
+
+				if( window.location.pathname.match('add') ) {
+					text = "فرستادن";
+				} else {
+					text = "ویرایش";
+				}
+
+				this.html += '<button type="submit" class="btn btn-default btn-success">'+text+'</button>';
+				this.html += ' <button type="reset" class="btn btn-default btn-danger">بازیابی فرم</button>';
+				this.html += "</form></div></div>";
+			
+				html = this.html;
+
+				return this.each(function() {
+					$(this).html( html );
+				});
 			}
 		}
 
-		return out.join(" ");
-	},
+		formMaker = function( options ) {
+			var def = {
+				action : "",
+				method : "post"
+			}
 
-	startFormGroup : function( auto = false ) {
-		this.html += this.bef_html;
+			opt = $.extend( def, options );
 
-		if( auto ) {
-			this.html += '<div class="form-group"><div class="row mrl0 m10">';
-			this.bef_html = '<div class="col-md-'+( 12 / auto )+'">';
-
-		}
-
-		return this;
-	},
-
-	endFormGroup : function( auto = false ) {
-		
-		this.html += '</div>';
-
-		if( auto ) {
+			this.auto = false;
 			this.bef_html = '<div class="form-group">';
-			this.html += '</div></div>';
+			this.html = '<div class="row"><div class="col-md-6"><form class="ajax" method="'+opt.method+'" action="'+opt.action+'">';
+
+			for( i in obj_formMaker ) {
+				this[ i ] = obj_formMaker[i];
+			}
+
+			return this;
 		}
 
-		return this;
-	},
 
-	input : function( label, name, attr ) {
-		var attr_set = this.makeAttr( attr );
+		jQuery.fn.formMaker = formMaker;		
+	</script>
+</head>
+<body>
 
-		this.startFormGroup();
-
-		this.html += '<label>'+label+'</label><input '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" type="text" name="'+name+'" />';
-
-		this.endFormGroup();
-
-		return this;
-	},
-	select : function( label, name, options, attr ) {
-		var attr_set = this.makeAttr( attr );
-
-		this.startFormGroup();
-			this.html += '<label>'+label+'</label>';
-			this.html += '<select '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" name="'+name+'">';
-			for( x in options ) {
-				this.html += '<option value="'+x+'">'+options[x]+'</option>';
-			}
-			this.html += '</select>';
-		this.endFormGroup();
-		return this;
-	},
-
-	textarea : function( label, name, attr ) {
-		var attr_set = this.makeAttr( attr );
-
-		this.startFormGroup();
-		
-			this.html += '<label>'+label+'</label><textarea '+attr_set+' class="form-control'+( typeof attr["class"] !== 'undefined' ? " "+attr["class"] : "" )+'" name="'+name+'"></textarea>';
-		
-		this.endFormGroup();
-
-		return this;
-	},
-
-	file : function( label, name, attr ) {
-		var attr_set = this.makeAttr( attr );
-
-		this.startFormGroup();
-			this.html += '<label>'+label+'</label><input '+attr_set+' type="file" name="'+name+'" />';
-		this.endFormGroup();
-		return this;
-	},
-	radio : function( label, name, options, attr ) {
-		var attr_set = this.makeAttr( attr );
-
-		this.startFormGroup();
-			this.html += '<label>'+label+'</label><br />';
-			for( x in options ) {
-				this.html += '<label class="radio-inline"><input '+attr_set+' name="'+name+'" type="radio" value="'+x+'">'+options[x]+'</label>';
-			}
-		this.endFormGroup();
-		return this;
-	},
-	checkbox : function( label, name, options, attr ) {
-		var attr_set = this.makeAttr( attr );
-
-		this.startFormGroup();
-		
-			for( x in options ) {
-				this.html += '<label class="checkbox-inline"><input '+attr_set+' name="'+name+'" type="checkbox" value="'+x+'">'+options[x]+'</label>'+( (typeof attr !== 'undefined' && attr['display'] == "block") ? "<br />" : "");
-			}
-		this.endFormGroup();
-		return this;
-	},
-	end : function() {
-
-		if( window.location.pathname.match('add') ) {
-			text = "فرستادن";
-		} else {
-			text = "ویرایش";
-		}
-
-		this.html += '<button type="submit" class="btn btn-default btn-success">'+text+'</button>';
-		this.html += ' <button type="reset" class="btn btn-default btn-danger">بازیابی فرم</button>';
-		this.html += "</form></div></div>";
-	
-		html = this.html;
-
-		return this.each(function() {
-			$(this).html( html );
-		});
-	}
-}
-
-formMaker = function( options ) {
-	var def = {
-		action : "",
-		method : "post"
-	}
-
-	opt = $.extend( def, options );
-
-	this.auto = false;
-	this.bef_html = '<div class="form-group">';
-	this.html = '<div class="row"><div class="col-md-6"><form class="ajax" method="'+opt.method+'" action="'+opt.action+'">';
-
-	for( i in obj_formMaker ) {
-		this[ i ] = obj_formMaker[i];
-	}
-
-	return this;
-}
-
-
-jQuery.fn.formMaker = formMaker;
-
+<div id="form"></div>
+<script>
 form = $("#form").formMaker()
 .startFormGroup( 2 )
 .input( "test", "test", { class : "test" } )
 .input( "test1", "test2", { class : "test" } )
-.endtFormGroup( true )
+.endFormGroup( true )
 
 .textarea( "test1", "test1", { class : "test" } )
 .radio( "test2", "test2", [ "test", "test2" ], { class : "test"} )
@@ -159,12 +168,10 @@ form = $("#form").formMaker()
 .startFormGroup( 2 )
 .select( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
 .select( "test2", "test2[]", [ "test", "test2" ], { class : "test"} )
-.endtFormGroup( true )
-
+.endFormGroup( true )
 .file( "test", "test", { class : "test" } )
 .end();
-
 </script>
 
-
-
+</body>
+</html>
